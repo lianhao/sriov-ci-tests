@@ -21,7 +21,7 @@ import six
 import time
 
 #from tempest.pci import pci
-import pci
+from . import pci
 
 from tempest import config
 from tempest import test
