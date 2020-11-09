@@ -26,12 +26,12 @@ from . import pci
 from tempest import config
 from tempest import test
 from tempest.lib.exceptions import SSHExecCommandFailed
-from network_base import ExtendNetworkScenarioTest
-import network_base as nb
+from .network_base import ExtendNetworkScenarioTest
+from . import network_base as nb
 from tempest.lib.common.utils import data_utils
 from tempest.common.utils.linux import remote_client
 from oslo_log import log as logging
-from static_ip import shell_command
+from .static_ip import shell_command
 
 #Not stable
 from tempest.scenario import manager
