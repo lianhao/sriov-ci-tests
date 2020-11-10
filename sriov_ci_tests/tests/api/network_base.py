@@ -43,31 +43,31 @@ class ExtendNetworkScenarioTest(manager.NetworkScenarioTest):
     @classmethod
     def resource_setup(cls):
         super(ExtendNetworkScenarioTest, cls).resource_setup()
-        cls.flavors_client = cls.os_primary.flavors_client
-        cls.floating_ips_client = cls.os_primary.floating_ips_client
+        cls.flavors_client = cls.os_admin.flavors_client
+        cls.floating_ips_client = cls.os_admin.floating_ips_client
         # Glance image client v1
-        cls.image_client = cls.os_primary.image_client
+        cls.image_client = cls.os_admin.image_client_v2
         # Compute image client
-        cls.images_client = cls.os_primary.compute_images_client
-        cls.keypairs_client = cls.os_primary.keypairs_client
-        #cls.networks_client = cls.os_primary.networks_client
+        #cls.images_client = cls.os_admin.compute_images_client
+        cls.keypairs_client = cls.os_admin.keypairs_client
+        #cls.networks_client = cls.os_admin.networks_client
         # Nova security groups client
-        cls.security_groups_client = cls.os_primary.security_groups_client
-        cls.servers_client = cls.os_primary.servers_client
-        cls.volumes_client = cls.os_primary.volumes_client_latest
-        cls.snapshots_client = cls.os_primary.snapshots_client_latest
-        cls.interface_client = cls.os_primary.interfaces_client
+        #cls.security_groups_client = cls.os_admin.security_groups_client
+        cls.servers_client = cls.os_admin.servers_client
+        cls.volumes_client = cls.os_admin.volumes_client_latest
+        cls.snapshots_client = cls.os_admin.snapshots_client_latest
+        #cls.interface_client = cls.os_admin.interfaces_client
         # Neutron network client
-        # cls.network_client = cls.os_primary.network_client
-        # cls.network_client = cls.os_primary.networks_client
+        # cls.network_client = cls.os_admin.network_client
+        # cls.network_client = cls.os_admin.networks_client
         # Neutron network client
-        # cls.network_client = cls.os_primary.network_client
-        # cls.networks_client = cls.os_primary.compute_networks_client
-        cls.networks_client = cls.os_primary.networks_client
-        cls.ports_client = cls.os_primary.ports_client
-        cls.subnets_client = cls.os_primary.subnets_client
+        # cls.network_client = cls.os_admin.network_client
+        # cls.networks_client = cls.os_admin.compute_networks_client
+        cls.networks_client = cls.os_admin.networks_client
+        cls.ports_client = cls.os_admin.ports_client
+        cls.subnets_client = cls.os_admin.subnets_client
         # Heat client
-        #cls.orchestration_client = cls.os_primary.orchestration_client
+        #cls.orchestration_client = cls.os_admin.orchestration_client
 
     def create_network(self, client=None, tenant_id=None,
                        namestart='network-sriov-', **kwargs):
