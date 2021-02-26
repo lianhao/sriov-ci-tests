@@ -1,6 +1,22 @@
+# Copyright 2020 Intel Corporation
+# All Rights Reserved.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#    License for the specific language governing permissions and limitations
+#    under the License.
+
+
 import base64
-import guestfs
 from functools import partial
+import guestfs
 import os
 import six
 import stat
@@ -16,8 +32,10 @@ from tempest.lib.common.utils import data_utils
 
 CONF = config.CONF
 
+
 def __init__(self):
     self.get_pci_config(self)
+
 
 def get_pci_config(self):
     self.nameList = []
@@ -28,7 +46,7 @@ def get_pci_config(self):
     parameter = parameter.strip()
     parameter = parameter.split(';')
     for i in parameter:
-        if i is not "":
+        if i != "":
             i = i.split(',')
             name = i[0].split(':')
             self.nameList.append(name[1])
@@ -40,27 +58,29 @@ def get_pci_config(self):
             self.infoList.append(info)
     self.infoList = tuple(self.infoList)
     self.countList = tuple(self.countList)
-    return self.infoList,self.countList
+    return self.infoList, self.countList
 
-def create_flavor_with_extra_specs(self,name,count=1):
+
+def create_flavor_with_extra_specs(self, name, count=1):
     flavor_with_pci_name = data_utils.rand_name('pci_flavor')
     flavor_with_pci_id = data_utils.rand_int_id(start=1000)
     ram = 2048
     vcpus = 1
     disk = 2
     pci_name = name
-    pci_name = "%s:%d"%(pci_name,count)
+    pci_name = "%s:%d" % (pci_name, count)
     specs = {"pci_passthrough:alias": pci_name}
 
     # Create a flavor with extra specs
     flavor = (self.flavor_client.
               create_flavor(name=flavor_with_pci_name,
-                                ram=ram, vcpus=vcpus, disk=disk,
-                                id=flavor_with_pci_id))
+                            ram=ram, vcpus=vcpus, disk=disk,
+                            id=flavor_with_pci_id))
     self.flavor_client.set_flavor_extra_spec(flavor['flavor']['id'], **specs)
     self.addCleanup(flavor_clean_up, self, flavor['flavor']['id'])
 
     return flavor['flavor']['id']
+
 
 def flavor_clean_up(self, flavor_id):
     body = self.flavor_client.delete_flavor(flavor_id)
@@ -99,19 +119,23 @@ PCIINFO_DELIMITER_END = PCIINFO_DELIMITER % "PCI INFO END"
 CONSOLE_DATA = [
     '#!/bin/sh -e',
     'echo "============================================="',
-    'if [ -f /etc/rc.local ]; then echo "/ete/rc.local exist"; else echo "/ete/rc.local not exist"; fi',
+    'if [ -f /etc/rc.local ]; then',
+    '  echo "/ete/rc.local exist";',
+    'else',
+    '  echo "/ete/rc.local not exist";',
+    'fi',
     'while [ ! -f /etc/rc.local ]; do "waiting for /etc/rc.local"; done;',
     'chmod a+x /etc/rc.local',
     'sudo echo "%s"' % PCIINFO_DELIMITER_BEGIN,
     'sudo lspci',
-    'sudo echo "%s"'  % PCIINFO_DELIMITER_END,
+    'sudo echo "%s"' % PCIINFO_DELIMITER_END,
     'exit 0']
 
 RC_LSPCI = [
     '#!/bin/sh -e',
     'echo "%s" > /dev/console' % (PCIINFO_DELIMITER % "RC LSPCI BEGIN"),
     'lspci > /dev/console',
-    'echo "%s" > /dev/console'  % (PCIINFO_DELIMITER % "RC LSPCI END"),
+    'echo "%s" > /dev/console' % (PCIINFO_DELIMITER % "RC LSPCI END"),
     'exit 0']
 
 INTERFACES = [
@@ -133,7 +157,7 @@ SUSPEND_PAUSE_CONSOLE_DATA = [
     'echo "============================================="',
     'echo "%s"' % PCIINFO_DELIMITER_BEGIN,
     'lspci',
-    'echo "%s"'  % PCIINFO_DELIMITER_END,
+    'echo "%s"' % PCIINFO_DELIMITER_END,
     'cat /dev/ttyS1 > /pm_state &',
     'sleep 3',
     'touch /pm_state',
@@ -148,14 +172,13 @@ SUSPEND_PAUSE_CONSOLE_DATA = [
     '    echo "1" > /pm_state',
     '    echo "%s" > /dev/console' % (PCIINFO_DELIMITER % "SP LSPCI BEGIN"),
     '    lspci > /dev/console',
-    '    echo "%s" > /dev/console'  % (PCIINFO_DELIMITER % "SP LSPCI END"),
+    '    echo "%s" > /dev/console' % (PCIINFO_DELIMITER % "SP LSPCI END"),
     '  else',
     '    sleep 1',
     '    echo "waiting for parameter"',
     '  fi',
     'done',
     'exit 0']
-
 
 
 def gen_rc_local_file(pci_path=PCI_PATH):
@@ -235,7 +258,7 @@ def gen_etc_fstab():
             "devpts     /dev/pts  devpts   defaults,gid=5,mode=620   0 0",
             "tmpfs      /dev/shm  tmpfs    mode=0777                 0 0",
             "sysfs      /sys      sysfs    defaults                  0 0",
-            "tmpfs      /run      tmpfs    rw,nosuid,relatime,size=200k,mode=755 0 0",
+            "tmpfs  /run  tmpfs  rw,nosuid,relatime,size=200k,mode=755 0 0",
             "/dev/vdb    /mnt/ auto    defaults                0 0"]
 
     data = "\n".join(data)
@@ -243,6 +266,7 @@ def gen_etc_fstab():
         data = data.encode('utf-8')
     cont = base64.b64encode(data).decode('utf-8')
     return cont
+
 
 def get_pci_info(disk, pci_path=PCI_PATH):
     """please remove the dir: os.rmdir(p)
@@ -263,7 +287,7 @@ def get_pci_info(disk, pci_path=PCI_PATH):
     $ export LIBGUESTFS_TRACE=1
     ref http://libguestfs.org/guestfs-faq.1.html#debugging-libguestfs
     """
-    p = tempfile.mkdtemp("guestfs", "mount")
+    #p = tempfile.mkdtemp("guestfs", "mount")
     g = guestfs.GuestFS(python_return_dict=True)
     # g.add_drive_opts(disk, format="qcow2", readonly=1)
     g.add_drive_opts(disk, readonly=1)
@@ -279,7 +303,7 @@ def nbd_mount(f, disk, path=PCI_PATH):
     $ sudo rmmod nbd
     $ sudo modprobe nbd max_part=16
     ref https://en.wikibooks.org/wiki/QEMU/Images
-    ref https://blogs.gnome.org/muelli/2010/03/mounting-qemu-qcow2-image-using-nbd/
+    ref https://blogs.gnome.org/muelli/2010/03/mounting-qemu-qcow2-image-using-nbd/ # noqa
     """
     mount_point = "/mnt/nbd"
     cmd = ["sudo", "modinfo", "nbd"]
@@ -339,6 +363,7 @@ def x_file(mount, rc_path):
     out = shell_command(cmd)
     return out
 
+
 rc_local_add_x = partial(nbd_mount, x_file)
 
 
@@ -352,6 +377,7 @@ def get_vda_path(xml):
         if t.attrib.get("dev") == "vda":
             return d.find("./source").get("file")
 
+
 def get_config_drive_path(xml):
     # tree = ET.parse('/etc/libvirt/qemu/instance-0000001f.xml')
     # root = tree.getroot()
@@ -361,6 +387,7 @@ def get_config_drive_path(xml):
         f = d.find("./source").get("file")
         if "disk.config" in f:
             return f
+
 
 def get_serial_path(xml):
     # tree = ET.parse('/etc/libvirt/qemu/instance-0000001f.xml')
@@ -382,7 +409,7 @@ def get_pci_output(get_console_output, server_id, DELIMITER='PCI INFO'):
         and lines.count(delimiter_end)):
         begin = lines.index(delimiter_begin) + 1
         end = lines.index(delimiter_end)
-        return lines[begin : end]
+        return lines[begin:end]
 
 
 def retry_get_pci_output(get_console_output, server_id,

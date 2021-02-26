@@ -13,34 +13,28 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import os
-import netaddr
 import ipaddress
-import functools
-import six
+import netaddr
+import os
 import time
 
 #from tempest.pci import pci
 from . import pci
-
-from tempest import config
-from tempest import test
-from tempest.lib.exceptions import SSHExecCommandFailed
 from .network_base import ExtendNetworkScenarioTest
-from . import network_base as nb
-from tempest.lib.common.utils import data_utils
-from tempest.common.utils.linux import remote_client
+
 from oslo_log import log as logging
-from .static_ip import shell_command
+from tempest.common.utils.linux import remote_client
+from tempest import config
+from tempest.lib.common.utils import data_utils
+from tempest import test
 
 #Not stable
-from tempest.scenario import manager
 from tempest.common import waiters
 
 CONF = config.CONF
 LOG = logging.getLogger(__name__)
 
-PRIVATE_IP_PATTERN = "192.168.198.(25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|[2-9])/24"
+PRIVATE_IP_PATTERN = r'192.168.198.(25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|[2-9])/24'
 IFACEPATH = "/opt/stack/tempest/interface"
 
 #hard code
@@ -59,9 +53,10 @@ PRIVATE_FIX_IP = "192.168.198.125"
 #SRIOV_IPADDR_START = ipaddress.IPv4Address(str(SRIOV_IP_START))
 SRIOV_IP_START = "192.168.3.130"
 SRIOV_IPADDR_START = ipaddress.IPv4Address(str(SRIOV_IP_START))
-SRIOV_CIDR = str(SRIOV_IPADDR_START).rsplit(".",1)[0] + ".0/24"
+SRIOV_CIDR = str(SRIOV_IPADDR_START).rsplit(".", 1)[0] + ".0/24"
 SRIOV_IP_END = str(SRIOV_IPADDR_START + 10)
 SRIOV_FIX_IP = str(SRIOV_IPADDR_START + 5)
+
 
 class TestNetworkAdvancedServerOps(ExtendNetworkScenarioTest):
 
@@ -160,10 +155,9 @@ class TestNetworkAdvancedServerOps(ExtendNetworkScenarioTest):
              'contents': cont}]
 
         create_kwargs = {
-           'networks': [
-               {'uuid': private_network["id"],'port': private_port['id']},
-               {'uuid': sriov_network['id'], 'port': sriov_port['id']},
-            ],
+            'networks': [
+                {'uuid': private_network["id"], 'port': private_port['id']},
+                {'uuid': sriov_network['id'], 'port': sriov_port['id']}],
             'key_name': self.keypair['name'],
             'config_drive': True,
         }

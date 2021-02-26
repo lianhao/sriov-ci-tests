@@ -13,17 +13,15 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import functools
-import six
 import base64
 import netaddr
+import six
+import time
 
-from tempest import config
-from tempest import test
-from tempest.lib.common.utils import test_utils
-from tempest.lib.common.utils import data_utils
 from oslo_log import log as logging
 from oslo_utils import encodeutils
+from tempest import config
+from tempest.lib.common.utils import data_utils
 
 #Not stable
 from tempest.scenario import manager
@@ -38,8 +36,6 @@ LOG = logging.getLogger(__name__)
 
 
 class ExtendNetworkScenarioTest(manager.NetworkScenarioTest):
-
-
     @classmethod
     def resource_setup(cls):
         super(ExtendNetworkScenarioTest, cls).resource_setup()
@@ -72,7 +68,7 @@ class ExtendNetworkScenarioTest(manager.NetworkScenarioTest):
     def create_network(self, client=None, tenant_id=None,
                        namestart='network-sriov-', **kwargs):
 
-        routers_client = None;
+        routers_client = None
 
         if not client:
             client = self.networks_client
@@ -81,7 +77,7 @@ class ExtendNetworkScenarioTest(manager.NetworkScenarioTest):
             routers_client = self.routers_client
 
         if not tenant_id:
-             tenant_id = client.tenant_id
+            tenant_id = client.tenant_id
         print("### tenentid:", tenant_id)
         if "name" in kwargs:
             name = kwargs["name"]
@@ -194,7 +190,7 @@ USER_DATA = ['#!/bin/sh -e',
 CONSOLE_DATA = ['#!/bin/sh -e',
                 'sudo echo "%s"' % PCIINFO_DELIMITER_BEGIN,
                 'sudo lspci',
-                'sudo echo "%s"'  % PCIINFO_DELIMITER_END,
+                'sudo echo "%s"' % PCIINFO_DELIMITER_END,
                 'exit 0']
 
 
@@ -226,7 +222,7 @@ def get_pci_output(get_console_output, server_id):
         and lines.count(PCIINFO_DELIMITER_END)):
         begin = lines.index(PCIINFO_DELIMITER_BEGIN) + 1
         end = lines.index(PCIINFO_DELIMITER_END)
-        return lines[begin : end]
+        return lines[begin:end]
 
 
 def retry_get_pci_output(get_console_output, server_id, retry=20):
